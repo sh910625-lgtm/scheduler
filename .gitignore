@@ -43,3 +43,8 @@ next-env.d.ts
 
 .vercel
 .env*
+
+# 에이전트 스킬 (vercel integration 설치 시 생성)
+.agents
+.claude
+skills-lock.json
