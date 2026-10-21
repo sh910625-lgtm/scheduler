@@ -49,13 +49,20 @@ async function syncCalendarList(api: CalendarApi, userId: string) {
         googleCalendarId: c.id,
         summary: c.summaryOverride ?? c.summary ?? c.id,
         color: c.backgroundColor ?? null,
+        accessRole: c.accessRole ?? "reader",
+        primary: !!c.primary,
         // 처음 발견한 캘린더는 기본 캘린더만 켜 둔다
         enabled: !!c.primary,
       })),
     )
     .onConflictDoUpdate({
       target: [calendars.userId, calendars.googleCalendarId],
-      set: { summary: sql`excluded.summary`, color: sql`excluded.color` },
+      set: {
+        summary: sql`excluded.summary`,
+        color: sql`excluded.color`,
+        accessRole: sql`excluded.access_role`,
+        primary: sql`excluded.primary`,
+      },
     });
 
   // Google에서 구독 해제된 캘린더 정리
@@ -113,7 +120,8 @@ async function runEventSync(api: CalendarApi, cal: CalendarRow) {
     .where(eq(calendars.id, cal.id));
 }
 
-async function applyEventChanges(calendarId: string, items: GoogleEvent[]) {
+/** Google 이벤트 변경분(생성·수정·취소)을 로컬 사본에 반영 */
+export async function applyEventChanges(calendarId: string, items: GoogleEvent[]) {
   const cancelledIds = items.filter((e) => e.status === "cancelled" && e.id).map((e) => e.id!);
   const rows = items
     .filter((e) => e.status !== "cancelled")
@@ -136,6 +144,7 @@ async function applyEventChanges(calendarId: string, items: GoogleEvent[]) {
           title: sql`excluded.title`,
           description: sql`excluded.description`,
           location: sql`excluded.location`,
+          meetUrl: sql`excluded.meet_url`,
           startAt: sql`excluded.start_at`,
           endAt: sql`excluded.end_at`,
           allDay: sql`excluded.all_day`,

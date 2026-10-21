@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   async redirects() {
-    return [{ source: "/", destination: "/calendar", permanent: false }];
+    return [{ source: "/", destination: "/today", permanent: false }];
   },
   cacheComponents: true,
   partialPrefetching: true,

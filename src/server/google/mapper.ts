@@ -22,6 +22,7 @@ export function toEventRow(calendarId: string, e: GoogleEvent): EventRow | null 
     title: e.summary ?? "",
     description: e.description ?? null,
     location: e.location ?? null,
+    meetUrl: e.hangoutLink ?? e.conferenceData?.entryPoints?.find((p) => p.entryPointType === "video")?.uri ?? null,
     startAt,
     endAt,
     allDay: !e.start.dateTime,

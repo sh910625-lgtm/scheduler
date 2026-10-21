@@ -3,7 +3,7 @@ import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import { auth } from "@/server/auth";
 
-export type CurrentUser = { id: string; email: string | null; name: string | null };
+export type CurrentUser = { id: string; email: string | null; name: string | null; image: string | null };
 
 /**
  * 현재 로그인 사용자를 반환하고, 없으면 /login 으로 보낸다.
@@ -21,5 +21,10 @@ export async function getOptionalUser(): Promise<CurrentUser | null> {
   await connection();
   const session = await auth();
   if (!session?.user?.id) return null;
-  return { id: session.user.id, email: session.user.email ?? null, name: session.user.name ?? null };
+  return {
+    id: session.user.id,
+    email: session.user.email ?? null,
+    name: session.user.name ?? null,
+    image: session.user.image ?? null,
+  };
 }

@@ -75,6 +75,9 @@ export const calendars = pgTable(
     googleCalendarId: text("google_calendar_id").notNull(),
     summary: text("summary").notNull(),
     color: text("color"),
+    /** owner | writer | reader | freeBusyReader */
+    accessRole: text("access_role").notNull().default("reader"),
+    primary: boolean("primary").notNull().default(false),
     enabled: boolean("enabled").notNull().default(true),
     syncToken: text("sync_token"),
     lastSyncedAt: timestamp("last_synced_at", { withTimezone: true }),
@@ -100,6 +103,7 @@ export const events = pgTable(
     title: text("title").notNull().default(""),
     description: text("description"),
     location: text("location"),
+    meetUrl: text("meet_url"),
     startAt: timestamp("start_at", { withTimezone: true }).notNull(),
     endAt: timestamp("end_at", { withTimezone: true }).notNull(),
     allDay: boolean("all_day").notNull().default(false),

@@ -30,6 +30,16 @@ describe("toEventRow", () => {
     expect(row!.title).toBe("");
   });
 
+  it("extracts the Google Meet link", () => {
+    const base = { id: "e4", start: { date: "2026-10-21" }, end: { date: "2026-10-22" } };
+    expect(toEventRow("cal-1", { ...base, hangoutLink: "https://meet.google.com/abc-defg-hij" })!.meetUrl).toBe(
+      "https://meet.google.com/abc-defg-hij",
+    );
+    const conf = { entryPoints: [{ entryPointType: "phone", uri: "tel:+1" }, { entryPointType: "video", uri: "https://meet.google.com/x" }] };
+    expect(toEventRow("cal-1", { ...base, conferenceData: conf })!.meetUrl).toBe("https://meet.google.com/x");
+    expect(toEventRow("cal-1", base)!.meetUrl).toBeNull();
+  });
+
   it("returns null when required fields are missing", () => {
     expect(toEventRow("cal-1", { id: "e3", start: { date: "2026-10-21" } })).toBeNull();
     expect(toEventRow("cal-1", { start: { date: "2026-10-21" }, end: { date: "2026-10-22" } })).toBeNull();

@@ -25,8 +25,8 @@ function fakeApi(opts: { calendarList: object[]; eventPages: (Page | Error)[] })
   return { api, listCalls };
 }
 
-const primary = { id: "me@example.com", summary: "내 캘린더", primary: true, backgroundColor: "#4285f4", timeZone: "Asia/Seoul" };
-const other = { id: "holidays", summary: "공휴일", backgroundColor: "#0b8043" };
+const primary = { id: "me@example.com", summary: "내 캘린더", primary: true, accessRole: "owner", backgroundColor: "#4285f4", timeZone: "Asia/Seoul" };
+const other = { id: "holidays", summary: "공휴일", accessRole: "reader", backgroundColor: "#0b8043" };
 
 const timed = (id: string, title: string): GoogleEvent => ({
   id,
@@ -63,9 +63,9 @@ describe("syncUser", () => {
     await syncUser(userId, api);
 
     const cals = await db.select().from(calendars).orderBy(calendars.summary);
-    expect(cals.map((c) => [c.summary, c.enabled])).toEqual([
-      ["공휴일", false],
-      ["내 캘린더", true],
+    expect(cals.map((c) => [c.summary, c.enabled, c.primary, c.accessRole])).toEqual([
+      ["공휴일", false, false, "reader"],
+      ["내 캘린더", true, true, "owner"],
     ]);
     expect(cals.find((c) => c.enabled)!.syncToken).toBe("tok-1");
     expect(await eventTitles()).toEqual(["A", "B"]);
