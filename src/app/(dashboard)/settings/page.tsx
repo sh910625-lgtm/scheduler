@@ -2,6 +2,8 @@ import { Suspense } from "react";
 import { getCurrentUser } from "@/server/session";
 import { getUserCalendars } from "@/features/events/queries";
 import { CalendarToggle } from "@/features/calendar/components/calendar-toggle";
+import { ReconnectNotice } from "@/features/calendar/components/reconnect-notice";
+import { getMissingCalendarScopes } from "@/server/google/client";
 
 export default function SettingsPage() {
   return (
@@ -17,6 +19,7 @@ export default function SettingsPage() {
 
 async function CalendarSettings() {
   const user = await getCurrentUser();
+  if ((await getMissingCalendarScopes(user.id)).length > 0) return <ReconnectNotice />;
   const calendars = await getUserCalendars(user.id);
 
   if (calendars.length === 0) {

@@ -4,6 +4,8 @@ import { syncUser } from "@/server/google/sync.service";
 import { getAgenda, getUserCalendars } from "@/features/events/queries";
 import { Agenda } from "@/features/events/components/agenda";
 import { SyncButton } from "@/features/calendar/components/sync-button";
+import { ReconnectNotice } from "@/features/calendar/components/reconnect-notice";
+import { getMissingCalendarScopes } from "@/server/google/client";
 
 export default function CalendarPage() {
   return (
@@ -21,6 +23,7 @@ export default function CalendarPage() {
 
 async function AgendaSection() {
   const user = await getCurrentUser();
+  if ((await getMissingCalendarScopes(user.id)).length > 0) return <ReconnectNotice />;
 
   // 첫 방문(연동된 캘린더가 아직 없음)이면 바로 전체 동기화
   if ((await getUserCalendars(user.id)).length === 0) {
