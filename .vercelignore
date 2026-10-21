@@ -1,0 +1,8 @@
+# CLI 배포 시 업로드 제외
+.env*
+!.env.example
+.agents
+.claude
+skills-lock.json
+node_modules
+.next
